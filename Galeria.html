@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Galería de Imágenes</title>
+        <style>
+
+        </style>
+    </head>
+    <body>
+        <h1>Mi Galería</h1>
+        <p class="subtitulo">Haz click en una imagen para ampliarla.</p>
+
+        <div id="galeria"></div>
+        <div id="modal">
+            <div id="modal-contenido">
+                <button id="btn-cerrar" onclick="cerrarModal()">x</button>
+                <img id="modal-img" src="" alt="">
+                <p id="modal-titulo"></p>
+                <p id="modal-contador"></p>
+                <div class="controles">
+                    <button onclick="navegarModal(-1)">&#8592;</button>
+                    <button onclick="navegarModal(1)">&#8594;</button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const imagenes = [
+                { src: "https://picsum.photos/seed/monte/400/400", titulo: "Montañas" },
+                { src: "https://picsum.photos/seed/playa/400/400", titulo: "Playa" },
+                { src: "https://picsum.photos/seed/bosque/400/400", titulo: "Bosque" },
+                { src: "https://picsum.photos/seed/ciudad/400/400", titulo: "Ciudad" },
+                { src: "https://picsum.photos/seed/desierto/400/400", titulo: "Desierto" },
+                { src: "https://picsum.photos/seed/lago/400/400", titulo: "Lago" },
+            ];
+
+            let indiceActual = 0;
+            const galeria = document.getElementById("galeria");
+
+            imagenes.forEach(function(imagen,indice){
+                const tarjeta = document.createElement("img");
+                tarjeta.classList.add("tarjeta");
+
+                const img = document.createElement("img");
+                img.src = imagen.src;
+                img.alt = imagen.titulo;
+
+                const etiqueta = document.createElement("p");
+                etiqueta.classList.add("etiqueta");
+                etiqueta.textContent = imagen.titulo;
+
+                tarjeta.appendChild(img);
+                tarjeta.appendChild(etiqueta);
+                galeria.appendChild(tarjeta);
+
+                tarjeta.addEventListener("click", function(){
+                    abrirModal(indice);
+                });
+            });
+        </script>
+    </body>
+</html>
