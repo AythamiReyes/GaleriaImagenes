@@ -1,1 +1,1 @@
-# Galer-aImagenes
+# GaleriaImagenes
