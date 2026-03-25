@@ -1,64 +1,291 @@
 <!DOCTYPE html>
 <html lang="es">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Galería de Imágenes</title>
-        <style>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Galería de Imágenes</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        </style>
-    </head>
-    <body>
-        <h1>Mi Galería</h1>
-        <p class="subtitulo">Haz click en una imagen para ampliarla.</p>
+    body {
+      font-family: 'Georgia', serif;
+      background: #1a1a2e;
+      color: #eee;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
 
-        <div id="galeria"></div>
-        <div id="modal">
-            <div id="modal-contenido">
-                <button id="btn-cerrar" onclick="cerrarModal()">x</button>
-                <img id="modal-img" src="" alt="">
-                <p id="modal-titulo"></p>
-                <p id="modal-contador"></p>
-                <div class="controles">
-                    <button onclick="navegarModal(-1)">&#8592;</button>
-                    <button onclick="navegarModal(1)">&#8594;</button>
-                </div>
-            </div>
-        </div>
+    h1 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 10px;
+      color: #e0c97f;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
 
-        <script>
-            const imagenes = [
-                { src: "https://picsum.photos/seed/monte/400/400", titulo: "Montañas" },
-                { src: "https://picsum.photos/seed/playa/400/400", titulo: "Playa" },
-                { src: "https://picsum.photos/seed/bosque/400/400", titulo: "Bosque" },
-                { src: "https://picsum.photos/seed/ciudad/400/400", titulo: "Ciudad" },
-                { src: "https://picsum.photos/seed/desierto/400/400", titulo: "Desierto" },
-                { src: "https://picsum.photos/seed/lago/400/400", titulo: "Lago" },
-            ];
+    p.subtitulo {
+      text-align: center;
+      color: #888;
+      margin-bottom: 40px;
+      font-size: 0.9rem;
+    }
 
-            let indiceActual = 0;
-            const galeria = document.getElementById("galeria");
+    /* GALERÍA */
+    #galeria {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
 
-            imagenes.forEach(function(imagen,indice){
-                const tarjeta = document.createElement("img");
-                tarjeta.classList.add("tarjeta");
+    .tarjeta {
+      position: relative;
+      overflow: hidden;
+      border-radius: 10px;
+      cursor: pointer;
+      aspect-ratio: 1;
+      background: #16213e;
+      border: 2px solid #2a2a4a;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
 
-                const img = document.createElement("img");
-                img.src = imagen.src;
-                img.alt = imagen.titulo;
+    .tarjeta:hover {
+      transform: scale(1.04);
+      box-shadow: 0 10px 30px rgba(224, 201, 127, 0.3);
+    }
 
-                const etiqueta = document.createElement("p");
-                etiqueta.classList.add("etiqueta");
-                etiqueta.textContent = imagen.titulo;
+    .tarjeta img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: opacity 0.3s ease;
+    }
 
-                tarjeta.appendChild(img);
-                tarjeta.appendChild(etiqueta);
-                galeria.appendChild(tarjeta);
+    .tarjeta .etiqueta {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(transparent, rgba(0,0,0,0.8));
+      padding: 20px 10px 10px;
+      font-size: 0.8rem;
+      color: #e0c97f;
+      text-align: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
 
-                tarjeta.addEventListener("click", function(){
-                    abrirModal(indice);
-                });
-            });
-        </script>
-    </body>
+    .tarjeta:hover .etiqueta {
+      opacity: 1;
+    }
+
+    /* MODAL */
+    #modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.88);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.3s ease;
+    }
+
+    #modal.activo {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    #modal-contenido {
+      position: relative;
+      max-width: 700px;
+      width: 90%;
+      text-align: center;
+      animation: zoomIn 0.3s ease;
+    }
+
+    @keyframes zoomIn {
+      from { transform: scale(0.85); opacity: 0; }
+      to   { transform: scale(1);    opacity: 1; }
+    }
+
+    #modal-img {
+      width: 100%;
+      max-height: 70vh;
+      object-fit: contain;
+      border-radius: 10px;
+      border: 2px solid #e0c97f;
+    }
+
+    #modal-titulo {
+      margin-top: 14px;
+      font-size: 1.1rem;
+      color: #e0c97f;
+      letter-spacing: 1px;
+    }
+
+    #modal-contador {
+      margin-top: 6px;
+      font-size: 0.8rem;
+      color: #888;
+    }
+
+    /* CONTROLES */
+    .controles {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .controles button {
+      background: #e0c97f;
+      color: #1a1a2e;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 6px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .controles button:hover {
+      background: #fff;
+      transform: scale(1.08);
+    }
+
+    #btn-cerrar {
+      position: absolute;
+      top: -14px;
+      right: -14px;
+      background: #e0c97f;
+      color: #1a1a2e;
+      border: none;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      font-size: 1.1rem;
+      cursor: pointer;
+      font-weight: bold;
+      line-height: 34px;
+      transition: background 0.2s;
+    }
+
+    #btn-cerrar:hover { background: #fff; }
+  </style>
+</head>
+<body>
+
+  <h1>Mi Galería</h1>
+  <p class="subtitulo">Haz clic en una imagen para ampliarla</p>
+
+  <div id="galeria"></div>
+
+  <!-- MODAL -->
+  <div id="modal">
+    <div id="modal-contenido">
+      <button id="btn-cerrar" onclick="cerrarModal()">✕</button>
+      <img id="modal-img" src="" alt="">
+      <p id="modal-titulo"></p>
+      <p id="modal-contador"></p>
+      <div class="controles">
+        <button onclick="navegarModal(-1)">&#8592;</button>
+        <button onclick="navegarModal(1)">&#8594;</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ─── DATOS DE LA GALERÍA ───────────────────────────────────────────────
+    const imagenes = [
+      { src: "https://picsum.photos/seed/monte/400/400",    titulo: "Montañas" },
+      { src: "https://picsum.photos/seed/playa/400/400",    titulo: "Playa" },
+      { src: "https://picsum.photos/seed/bosque/400/400",   titulo: "Bosque" },
+      { src: "https://picsum.photos/seed/ciudad/400/400",   titulo: "Ciudad" },
+      { src: "https://picsum.photos/seed/desierto/400/400", titulo: "Desierto" },
+      { src: "https://picsum.photos/seed/lago/400/400",     titulo: "Lago" },
+    ];
+
+    let indiceActual = 0;
+
+    // ─── CONSTRUIR GALERÍA CON DOM ─────────────────────────────────────────
+    const galeria = document.getElementById("galeria");
+
+    imagenes.forEach(function(imagen, indice) {
+      // Crear tarjeta
+      const tarjeta = document.createElement("div");
+      tarjeta.classList.add("tarjeta");
+
+      // Crear imagen
+      const img = document.createElement("img");
+      img.src = imagen.src;
+      img.alt = imagen.titulo;
+
+      // Crear etiqueta
+      const etiqueta = document.createElement("p");
+      etiqueta.classList.add("etiqueta");
+      etiqueta.textContent = imagen.titulo;
+
+      // Añadir al DOM
+      tarjeta.appendChild(img);
+      tarjeta.appendChild(etiqueta);
+      galeria.appendChild(tarjeta);
+
+      // Evento clic → abrir modal
+      tarjeta.addEventListener("click", function() {
+        abrirModal(indice);
+      });
+    });
+
+    // ─── FUNCIONES DEL MODAL ───────────────────────────────────────────────
+    function abrirModal(indice) {
+      indiceActual = indice;
+      actualizarModal();
+
+      const modal = document.getElementById("modal");
+      modal.classList.add("activo");
+    }
+
+    function cerrarModal() {
+      const modal = document.getElementById("modal");
+      modal.classList.remove("activo");
+    }
+
+    function navegarModal(direccion) {
+      indiceActual = (indiceActual + direccion + imagenes.length) % imagenes.length;
+      actualizarModal();
+    }
+
+    function actualizarModal() {
+      const imagen = imagenes[indiceActual];
+      document.getElementById("modal-img").src = imagen.src;
+      document.getElementById("modal-titulo").textContent = imagen.titulo;
+      document.getElementById("modal-contador").textContent =
+        (indiceActual + 1) + " / " + imagenes.length;
+    }
+
+    // Cerrar modal al hacer clic en el fondo oscuro
+    document.getElementById("modal").addEventListener("click", function(e) {
+      if (e.target === this) cerrarModal();
+    });
+
+    // Navegar con las teclas del teclado
+    document.addEventListener("keydown", function(e) {
+      if (!document.getElementById("modal").classList.contains("activo")) return;
+      if (e.key === "ArrowLeft")  navegarModal(-1);
+      if (e.key === "ArrowRight") navegarModal(1);
+      if (e.key === "Escape")     cerrarModal();
+    });
+  </script>
+
+</body>
 </html>
